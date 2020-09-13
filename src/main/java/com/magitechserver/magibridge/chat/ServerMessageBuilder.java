@@ -148,7 +148,7 @@ public class ServerMessageBuilder implements MessageBuilder {
                     messageChannel = MessageChannel.TO_ALL;
                 }
             } else {
-                messageChannel = NucleusAPI.getStaffChatService().get().getStaffChat();
+                messageChannel = MessageChannel.fixed(NucleusAPI.getStaffChatService().get().getStaffChat().getMembers());
                 this.format = FormatType.DISCORD_TO_SERVER_STAFF_FORMAT;
             }
 
