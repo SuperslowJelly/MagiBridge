@@ -6,11 +6,12 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 /**
  * Created by Frani on 27/09/2017.
  */
+
 @ConfigSerializable
 public class CoreCategory {
 
-    @Setting(value = "bot-token", comment = "Bot Token of the Bot User that you want to be used when sending messages to Discord")
-    public String BOT_TOKEN = "";
+    @Setting(value = "server-selection", comment = "Name of the server that the plugin is running on\nAcceptable values: [Terra Nova, Antimatter Chemistry, MC Eternal, SkyFactory 4, Project Ozone 3, Direwolf20, Revelation, Stoneblock 2, Sky Odyssey, Ultimate Reloaded]")
+    public String SERVER_SELECTION = "";
     @Setting(value = "death-messages-enabled", comment = "Should MagiBridge send death messages to Discord?")
     public boolean DEATH_MESSAGES_ENABLED = true;
     @Setting(value = "advancement-messages-enabled", comment = "Should MagiBridge send advancement messages to Discord?")

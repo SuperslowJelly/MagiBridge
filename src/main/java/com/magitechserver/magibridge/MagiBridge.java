@@ -1,5 +1,6 @@
 package com.magitechserver.magibridge;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
@@ -42,6 +43,7 @@ import org.spongepowered.api.util.Tristate;
 import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.lang.management.ManagementFactory;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -179,9 +181,45 @@ public class MagiBridge {
             config = new ConfigManager(instance).loadConfig();
             // needed because of parsing issues
             Utils.turnAllConfigChannelsNumeric();
-
+            String[] servers = {"Terra Nova", "Antimatter Chemistry", "MC Eternal", "SkyFactory 4", "Project Ozone 3", "Direwolf20", "Revelation", "Stoneblock 2", "Sky Odyssey", "Ultimate Reloaded"};
+            String server = "";
+            if (!Objects.equal(config.CORE.SERVER_SELECTION, null)) {
+                if (Objects.equal(config.CORE.SERVER_SELECTION, "Terra Nova"))
+                    server = "REDACTED"; // Replace with Terra Nova bot token.
+                else if (Objects.equal(config.CORE.SERVER_SELECTION, "Antimatter Chemistry"))
+                    server = "REDACTED"; // Replace with Antimatter Chemistry bot token.
+                else if (Objects.equal(config.CORE.SERVER_SELECTION, "MC Eternal"))
+                    server = "REDACTED"; // Replace with MC Eternal bot token.
+                else if (Objects.equal(config.CORE.SERVER_SELECTION, "SkyFactory 4"))
+                    server = "REDACTED"; // Replace with SkyFactory 4 bot token.
+                else if (Objects.equal(config.CORE.SERVER_SELECTION, "Project Ozone 3"))
+                    server = "REDACTED"; // Replace with Project Ozone 3 bot token.
+                else if (Objects.equal(config.CORE.SERVER_SELECTION, "Direwolf20"))
+                    server = "REDACTED"; // Replace with Direwolf20 bot token.
+                else if (Objects.equal(config.CORE.SERVER_SELECTION, "Revelation"))
+                    server = "REDACTED"; // Replace with Revelation bot token.
+                else if (Objects.equal(config.CORE.SERVER_SELECTION, "Stoneblock 2"))
+                    server = "REDACTED"; // Replace with Stoneblock 2 bot token.
+                else if (Objects.equal(config.CORE.SERVER_SELECTION, "Sky Odyssey"))
+                    server = "REDACTED"; // Replace with Sky Odyssey bot token.
+                else if (Objects.equal(config.CORE.SERVER_SELECTION, "Ultimate Reloaded"))
+                    server = "REDACTED"; // Replace with Ultimate Reloaded bot token.
+                else {
+                    String exception =
+                            "ERROR STARTING THE PLUGIN: \n" +
+                                    "THE SERVER-SELECTION CONFIG IS INVALID! \n" +
+                                    "You most likely mis-spelt the server! Please check it against the list. \n";
+                    throw new RuntimeException(exception);
+                }
+            } else {
+                String exception =
+                        "ERROR STARTING THE PLUGIN: \n" +
+                                "THE SERVER-SELECTION CONFIG IS INVALID! \n" +
+                                "Your config is empty! Please provide a server.";
+                throw new RuntimeException(exception);
+            }
             try {
-                jda = new JDABuilder(config.CORE.BOT_TOKEN)
+                jda = new JDABuilder(server)
                 .setDisabledCacheFlags(EnumSet.of(
                         CacheFlag.VOICE_STATE,
                         CacheFlag.CLIENT_STATUS)
@@ -192,8 +230,7 @@ public class MagiBridge {
             } catch (LoginException e) {
                 String exception =
                         "ERROR STARTING THE PLUGIN: \n" +
-                        "THE TOKEN IN THE CONFIG IS INVALID! \n" +
-                        "You probably didn't set the token yet, edit your config!";
+                        "THE SERVER SELECTION IN THE CONFIG IS INVALID!";
                 throw new RuntimeException(exception);
             } catch (Exception e) {
                 throw new RuntimeException("Error connecting to discord. This is NOT a plugin error: ", e);
