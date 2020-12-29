@@ -10,9 +10,12 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.service.user.UserStorageService;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by Frani on 04/07/2017.
@@ -79,6 +82,39 @@ public class MessageListener extends ListenerAdapter {
         boolean canUseColors = colorAllowedRole.equalsIgnoreCase("everyone") ||
                 (isMember && member.getRoles().stream()
                         .anyMatch(r -> r.getName().equalsIgnoreCase(colorAllowedRole)));
+
+        // Check if the staff role is everyone or if the sender has the role
+        String staffRole = config.CHANNELS.SENDTOSPAWN_REQUIRED_ROLE;
+        boolean isStaff = staffRole.equalsIgnoreCase("everyone") ||
+                (isMember && member.getRoles().stream()
+                        .anyMatch(r -> r.getName().equalsIgnoreCase(staffRole)));
+        // Send the specified player to spawn.
+        if (isMember && !member.getRoles().isEmpty()) {
+            if (isStaff && e.getMessage().getContentDisplay().startsWith("$sendtospawn")) {
+                boolean flag = false;
+                String playerName = e.getMessage().getContentDisplay().substring(13);
+                String reason = "Unknown!";
+                try {
+                    UserStorageService userStorageService;
+                    if (!Objects.isNull(userStorageService = Sponge.getServiceManager().provide(UserStorageService.class).orElse(null))) {
+                        if (!Objects.isNull(userStorageService.get(playerName).orElse(null))) {
+                            Utils.writeJsonSimple(playerName, false);
+                            flag = true;
+                        } else reason = "User not found.";
+                    } else reason = "UserStorageService not found.";
+                } catch (Exception ex) {
+                    reason = "writeJsonSimple Exception!";
+                }
+                String response;
+                if (flag) {
+                    response = "Player name, " + playerName + ", was sent to cache, awaiting login for relocation!";
+                } else {
+                    response = "Could not send player name, " + playerName + ", to cache! Reason: " + reason;
+                }
+                e.getChannel().sendMessage(response).queue();
+                return;
+            }
+        }
 
         String name = isMember ? member.getEffectiveName() : "Unknown";
 

@@ -9,8 +9,11 @@ import io.github.aquerr.eaglefactions.api.messaging.chat.AllianceMessageChannel;
 import io.github.aquerr.eaglefactions.api.messaging.chat.FactionMessageChannel;
 import io.github.nucleuspowered.nucleus.api.NucleusAPI;
 import io.github.nucleuspowered.nucleus.api.chat.NucleusChatChannel;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.Warp;
+import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
 import nl.riebie.mcclans.channels.AllyMessageChannelImpl;
 import nl.riebie.mcclans.channels.ClanMessageChannelImpl;
+import org.json.simple.JSONObject;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
@@ -24,6 +27,10 @@ import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.type.FixedMessageChannel;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
+
+import java.util.Objects;
 
 /**
  * Created by Frani on 17/04/2019.
@@ -149,6 +156,24 @@ public class VanillaListeners {
 
     @Listener
     public void onLogin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player p) {
+        try {
+            NucleusWarpService nucleusWarpService;
+            Warp warp;
+            Location location;
+            World world;
+            if (((JSONObject) Utils.readJsonSimple()).containsValue(p.getName()) &&
+            !Objects.isNull(nucleusWarpService = NucleusAPI.getWarpService().orElse(null)) &&
+            !Objects.isNull(warp = nucleusWarpService.getWarp("spawn").orElse(null)) &&
+            !Objects.isNull(location = warp.getLocation().orElse(null)) &&
+            !Objects.isNull(world = Sponge.getServer().getWorld(location.getExtent().getUniqueId()).orElse(null))) {
+                p.setLocation(location.getPosition(), world.getUniqueId());
+                Utils.writeJsonSimple(p.getName(), true);
+                MagiBridge.getLogger().info("Player, " + p.getName() + ", was sent to spawn!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         if (!p.hasPermission("magibridge.chat")) return;
 
         if (!p.hasPlayedBefore()) {

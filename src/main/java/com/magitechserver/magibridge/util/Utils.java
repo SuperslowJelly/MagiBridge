@@ -7,6 +7,7 @@ import io.github.nucleuspowered.nucleus.api.NucleusAPI;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.json.simple.parser.JSONParser;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
@@ -16,6 +17,10 @@ import org.spongepowered.api.service.permission.SubjectReference;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import java.io.FileReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +30,30 @@ import java.util.stream.Collectors;
  * Created by Frani on 01/05/2019.
  */
 public class Utils {
+
+    public static void writeJsonSimple(String playerName, Boolean removePlayer) throws Exception {
+        Path filePath = Paths.get("/home/container/./plugins/config/magibridge/toSpawnCache.json");
+        if (Files.exists(filePath)) {
+            org.json.simple.JSONObject jsonObject = (org.json.simple.JSONObject) readJsonSimple();
+            if (!removePlayer) {
+                if (!jsonObject.containsValue(playerName)) {
+                    jsonObject.put(playerName, playerName);
+                    Files.write(filePath, jsonObject.toJSONString().getBytes());
+                }
+            } else {
+                jsonObject.remove(playerName);
+                Files.write(filePath, jsonObject.toJSONString().getBytes());
+            }
+        } else {
+            org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+            jsonObject.put(playerName, playerName);
+            Files.write(filePath, jsonObject.toJSONString().getBytes());
+        }
+    }
+
+    public static Object readJsonSimple() throws Exception {
+        return (new JSONParser()).parse(new FileReader("/home/container/./plugins/config/magibridge/toSpawnCache.json"));
+    }
 
     public static String getHighestGroup(Player player) {
         try {

@@ -32,6 +32,8 @@ public class Channel {
     public Map<String, String> COMMANDS_ROLE_OVERRIDE = Maps.newHashMap();
     @Setting(value = "console-command-required-role", comment = "Role that a user needs to have in order to run the console command")
     public String CONSOLE_REQUIRED_ROLE = "admin";
+    @Setting(value = "sendtospawn-required-role", comment = "Role that a user needs to have in order to run the $sendtospawn command")
+    public String SENDTOSPAWN_REQUIRED_ROLE = "Support Team";
     @Setting(value = "color-allowed-role", comment = "Role that users need to have to be able to send colored chat to minecraft\n" +
             "Set to \"everyone\" to allow everyone use colors in the messages")
     public String COLOR_REQUIRED_ROLE = "vip";
